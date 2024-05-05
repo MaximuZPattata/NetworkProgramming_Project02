@@ -1,0 +1,80 @@
+syntax = "proto2";
+
+package accountAuthProtocol;
+
+enum MessageType 
+{
+  REGISTER = 1;
+  REGISTER_SUCCESS = 2;
+  REGISTER_FAIL = 3;
+  AUTHENTICATE = 4;
+  AUTHENTICATE_SUCCESS = 5;
+  AUTHENTICATE_FAIL = 6;
+}
+
+message MessageWithPrefix 
+{
+  optional int32 length = 1;
+  required bytes serializedMessage = 2;
+}
+
+message AccountCreation 
+{
+  required MessageType type = 1;
+  required int64 requestId = 2;
+  required string email = 3;
+  required string plaintextPassword = 4;
+}
+
+message AccountCreationSuccess 
+{
+  required MessageType type = 1;
+  required int64 requestId = 2;
+  optional int64 userId = 3;
+}
+
+message AccountCreationFailure 
+{
+  required MessageType type = 1;
+  required int64 requestId = 2;
+
+  enum FailReason 
+  {
+  ACCOUNT_ALREADY_EXISTS = 0;
+  INVALID_EMAIL = 1;
+  INVALID_PASSWORD = 2;
+  INTERNAL_SERVER_ERROR = 3;
+  }
+
+  optional FailReason reason = 3 [default = INVALID_PASSWORD];
+}
+
+message AuthenticateAccount 
+{
+  required MessageType type = 1;
+  required int64 requestId = 2;
+  required string email = 3;
+  required string plaintextPassword = 4;
+}
+
+message AuthenticationSuccess 
+{
+  required MessageType type = 1;
+  required int64 requestId = 2;
+  optional int64 userId = 3;
+  optional string creationDate = 4;
+}
+
+message AuthenticationFailure 
+{
+  required MessageType type = 1;
+  required int64 requestId = 2;
+
+  enum FailReason 
+  {
+  INVALID_CREDENTIALS = 0;
+  INTERNAL_SERVER_ERROR = 1;
+  }
+
+  required FailReason reason = 3 [default = INVALID_CREDENTIALS];
+}
